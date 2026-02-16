@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLife - Страховая Компания</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    .bg-particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-100px) translateX(50px); }
+      50% { transform: translateY(-50px) translateX(-50px); }
+      75% { transform: translateY(-150px) translateX(100px); }
+    }
+
+    /* Navigation Bar */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      cursor: pointer;
+    }
+
+    .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links button {
+      background: transparent;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 0.7rem 1.3rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .nav-links button.active {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Page Container */
+    .page {
+      display: none;
+      padding: 130px 3rem 5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 5rem 3rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      margin-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 4.5rem;
+      color: white;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.6rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2.5rem;
+      max-width: 850px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1.3rem 3.5rem;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.4s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 2.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .stat-number {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.2rem;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 3rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-icon {
+      width: 75px;
+      height: 75px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h3 {
+      color: white;
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+      font-weight: 700;
+    }
+
+    .card p {
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.7;
+      font-size: 1.1rem;
+    }
+
+    /* Content Sections */
+    .content-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 3.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      margin-bottom: 2.5rem;
+    }
+
+    .content-section h2 {
+      color: white;
+      font-size: 3rem;
+      margin-bottom: 1.8rem;
+      font-weight: 700;
+    }
+
+    .content-section p {
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.9;
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 3.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 2rem;
+    }
+
+    .form-group label {
+      display: block;
+      color: white;
+      font-weight: 600;
+      margin-bottom: 0.7rem;
+      font-size: 1.15rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 1.2rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      color: white;
+      font-size: 1.05rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 1.3rem;
+      background: white;
+      color: #667eea;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem 1.5rem;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+      }
+
+      .nav-links button {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.95rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+      }
+
+      .page {
+        padding: 100px 1.5rem 3rem;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Background Particles -->
+<div class="bg-particles" id="particles"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-container">
+    <div class="logo" onclick="switchPage('home')">
+      <div class="logo-icon">🛡️</div>
+      <span>SecureLife</span>
+    </div>
+    <ul class="nav-links">
+      <li><button class="nav-btn active" data-page="home">Главная</button></li>
+      <li><button class="nav-btn" data-page="services">Услуги</button></li>
+      <li><button class="nav-btn" data-page="about">О нас</button></li>
+      <li><button class="nav-btn" data-page="contact">Контакты</button></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Home Page -->
+<div id="home" class="page active">
+  <div class="hero">
+    <h1>Ваше будущее под защитой</h1>
+    <p>Надежное страхование жизни, здоровья и имущества. Более 15 лет заботимся о безопасности наших клиентов</p>
+    <button class="cta-button" onclick="switchPage('services')">Выбрать страховку</button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">50K+</div>
+      <div class="stat-label">Довольных клиентов</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">15+</div>
+      <div class="stat-label">Лет на рынке</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Одобренных выплат</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">24/7</div>
+      <div class="stat-label">Поддержка клиентов</div>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">💼</div>
+      <h3>Страхование жизни</h3>
+      <p>Финансовая защита для вас и ваших близких на все случаи жизни</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏥</div>
+      <h3>Медицинское страхование</h3>
+      <p>Полный спектр медицинских услуг в лучших клиниках страны</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏠</div>
+      <h3>Страхование имущества</h3>
+      <p>Защита вашего дома, квартиры и личного имущества от всех рисков</p>
+    </div>
+  </div>
+</div>
+
+<!-- Services Page -->
+<div id="services" class="page">
+  <div class="content-section">
+    <h2>Наши услуги</h2>
+    <p>SecureLife предлагает широкий спектр страховых продуктов для физических и юридических лиц. Мы разработали гибкие программы, которые подходят каждому клиенту.</p>
+  </div>
+
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">👤</div>
+      <h3>Личное страхование</h3>
+      <p>Комплексная защита жизни и здоровья с гибкими условиями и широким покрытием рисков</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🚗</div>
+      <h3>Автострахование</h3>
+      <p>ОСАГО и КАСКО с быстрым оформлением и моментальными выплатами при страховых случаях</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">✈️</div>
+      <h3>Страхование путешествий</h3>
+      <p>Медицинская помощь за границей, страхование багажа и защита от отмены поездки</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <h3>Бизнес-страхование</h3>
+      <p>Защита коммерческой недвижимости, ответственности и финансовых рисков компании</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>Инвестиционное страхование</h3>
+      <p>Накопительные программы с гарантированной доходностью и налоговыми льготами</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">👨‍👩‍👧‍👦</div>
+      <h3>Семейное страхование</h3>
+      <p>Комплексные пакеты для всей семьи с выгодными условиями и скидками</p>
+    </div>
+  </div>
+</div>
+
+<!-- About Page -->
+<div id="about" class="page">
+  <div class="content-section">
+    <h2>О компании SecureLife</h2>
+    <p>Мы — одна из ведущих страховых компаний на рынке, специализирующаяся на предоставлении надежных и доступных страховых услуг. С 2009 года мы помогаем людям защищать то, что для них важнее всего.</p>
+    <p>Наша миссия — обеспечить финансовую безопасность и душевное спокойствие каждому клиенту. Мы верим, что качественная страховка должна быть доступной и понятной.</p>
+  </div>
+
+  <div class="content-section">
+    <h2>Наши преимущества</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Быстрые выплаты</h3>
+        <p>Средний срок рассмотрения заявки — 3 дня. Экстренные выплаты в течение 24 часов</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔒</div>
+        <h3>Надежность</h3>
+        <p>Рейтинг А+ от международных агентств. Капитал компании превышает 10 млрд рублей</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3>Онлайн-сервис</h3>
+        <p>Оформление полиса за 5 минут. Управление страховкой через мобильное приложение</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">15+</div>
+      <div class="stat-label">Лет опыта</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">50,000+</div>
+      <div class="stat-label">Активных клиентов</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">150+</div>
+      <div class="stat-label">Офисов по стране</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">2.5 млрд</div>
+      <div class="stat-label">Выплат в 2024</div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Page -->
+<div id="contact" class="page">
+  <div class="content-section">
+    <h2>Свяжитесь с нами</h2>
+    <p>Наши специалисты готовы ответить на любые вопросы и помочь подобрать оптимальную страховую программу. Мы работаем для вас 24/7.</p>
+  </div>
+
+  <div class="contact-form">
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="name">Ваше имя</label>
+        <input type="text" id="name" placeholder="Иван Петров" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="ivan@example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" placeholder="+7 (999) 123-45-67" required>
+      </div>
+      <div class="form-group">
+        <label for="message">Сообщение</label>
+        <textarea id="message" rows="5" placeholder="Расскажите, чем мы можем помочь..." required></textarea>
+      </div>
+      <button type="submit" class="submit-button">Отправить заявку</button>
+    </form>
+  </div>
+
+  <div class="cards-grid" style="margin-top: 3rem;">
+    <div class="card">
+      <div class="card-icon">📞</div>
+      <h3>Телефон</h3>
+      <p>8 (800) 555-35-35<br>Бесплатно по России</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">✉️</div>
+      <h3>Email</h3>
+      <p>info@securelife.ru<br>support@securelife.ru</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📍</div>
+      <h3>Офис</h3>
+      <p>Москва, ул. Тверская, 15<br>Ежедневно 9:00 - 21:00</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Generate animated background particles
+  const particlesContainer = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    const size = Math.random() * 100 + 50;
+    particle.style.width = size + 'px';
+    particle.style.height = size + 'px';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.top = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 15 + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    particlesContainer.appendChild(particle);
+  }
+
+  // Page navigation function
+  function switchPage(pageName) {
+    // Hide all pages
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => {
+      page.classList.remove('active');
+    });
+
+    // Remove active class from all nav buttons
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    // Show selected page
+    document.getElementById(pageName).classList.add('active');
+
+    // Add active class to clicked nav button
+    const activeButton = document.querySelector(`[data-page="${pageName}"]`);
+    if (activeButton) {
+      activeButton.classList.add('active');
+    }
+
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Add click event listeners to navigation buttons
+  const navButtons = document.querySelectorAll('.nav-btn');
+  navButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const pageName = this.getAttribute('data-page');
+      switchPage(pageName);
+    });
+  });
+
+  // Contact form submission
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Спасибо за заявку! Наш менеджер свяжется с вами в ближайшее время.');
+    this.reset();
+  });
+</script>
+</body>
+</html>
